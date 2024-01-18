@@ -142,4 +142,4 @@ cumprod(big_setosa$Sepal.Area)#cummulative product
 
 #give me all the rows in iris where the species is virginica or setosa
 iris[iris$Species==c("virginica","setosa"),]
->>>>>>> 761f226 (renamed notes and added new info)
+
