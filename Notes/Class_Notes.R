@@ -312,13 +312,51 @@ bill.length$body_mass_g%>%mean
   mean
 
  # find the mean,max,min, n, but for each species####
+ ## Functions: Summarize, group_by,arrange####
  penguins %>%
    filter(bill_length_mm>40 & sex== "female",) %>%
-  group_by(species)%>%
+  group_by(species,island )%>% #commas to seperate all groupings
    summarize(mean_body_mass= mean(body_mass_g),
              min_body_mass=min(body_mass_g),
-             max_body_mass=max(body_mass_g),
+             max_body_mass=max(body_mass_g),# these functions are best for statistical point estimates
              sd_body_mass=sd(body_mass_g),
              N=n()) %>%
- arrange(desc(mean_body_mass)) %>%
+ arrange(desc(mean_body_mass)) %>% #desk needs to be inside a arrange function
    write_csv("./Data/penguin_summary.csv")
+ 
+ ###practice of functions####
+ # Find the fattie penguins (body_mass >5000)
+ #count how many are male and how many are female
+ #return the max body mass for mels and females
+ #bonus: add new column to penguins that says whether they're a fattie
+ 
+ penguins %>%
+   filter(body_mass_g>5000,) #filter is for selecting rows
+ 
+ penguins %>%
+   filter(body_mass_g>5000,)%>%
+   group_by(sex)%>%
+   summarize(N=n(),
+           max_body_mass=max(body_mass_g))
+penguins %>%
+  mutate(fattie=body_mass_g >5000) #changing columns, making new columns based on exisitng stuff
+
+x <- 
+  penguins %>%
+  mutate(fatstat=case_when(body_mass_g >5000 ~ "fattie",
+                          body_mass_g <=5000 ~ "skinny")) #case_when() only works in mutate. logical exprenssion and give condition####
+
+#plotting####
+x %>%
+  ggplot(mapping=aes(x=body_mass_g, y=bill_length_mm, color=fatstat, shape=fatstat)) +
+  geom_point() +
+  geom_smooth() +
+  scale_color_manual(values=c("turquoise","salmon"))+
+  theme_dark()+
+  theme(axis.text=element_text(angle=180, face= "italic"))
+  #scale_color_viridis_d(option='plasma',end=.8) #viridis is color blind friendly, d is for discrete
+  
+  
+ 
+
+ 
