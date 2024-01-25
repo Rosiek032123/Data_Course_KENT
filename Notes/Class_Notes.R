@@ -291,3 +291,34 @@ mtcars %>%
 
 mtcar %>%
   filter(mpg > 19 & vs == 1) # can give multiple conditions
+
+
+#1/25/24####
+
+#subset this penguins data frome to only those obsevations where bill_length_mm >40
+library(tidyverse)
+library(palmerpenguins)
+
+bill.length <- penguins %>%
+  filter(bill_length_mm>40& sex== "female",)
+#find mean body mass
+bill.length$body_mass_g%>%mean
+
+
+#find mean body mass of female long-beaked penguins
+ penguins %>%
+  filter(bill_length_mm>40 & sex== "female",) %>%
+  pluck("body_mass_g") %>%
+  mean
+
+ # find the mean,max,min, n, but for each species####
+ penguins %>%
+   filter(bill_length_mm>40 & sex== "female",) %>%
+  group_by(species)%>%
+   summarize(mean_body_mass= mean(body_mass_g),
+             min_body_mass=min(body_mass_g),
+             max_body_mass=max(body_mass_g),
+             sd_body_mass=sd(body_mass_g),
+             N=n()) %>%
+ arrange(desc(mean_body_mass)) %>%
+   write_csv("./Data/penguin_summary.csv")
