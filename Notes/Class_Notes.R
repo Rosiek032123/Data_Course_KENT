@@ -339,12 +339,12 @@ bill.length$body_mass_g%>%mean
    summarize(N=n(),
            max_body_mass=max(body_mass_g))
 penguins %>%
-  mutate(fattie=body_mass_g >5000) #changing columns, making new columns based on exisitng stuff
+  mutate(fattie=body_mass_g >5000) #changing columns, making new columns based on existing stuff
 
 x <- 
   penguins %>%
   mutate(fatstat=case_when(body_mass_g >5000 ~ "fattie",
-                          body_mass_g <=5000 ~ "skinny")) #case_when() only works in mutate. logical exprenssion and give condition####
+                          body_mass_g <=5000 ~ "skinny")) #case_when() only works in mutate. logical expression and give condition####
 
 #plotting####
 x %>%
@@ -355,8 +355,46 @@ x %>%
   theme_dark()+
   theme(axis.text=element_text(angle=180, face= "italic"))
   #scale_color_viridis_d(option='plasma',end=.8) #viridis is color blind friendly, d is for discrete
+
+#1/30/24####
+library(tidyverse)
+#type the followin in pipe format
+#unique(stringr::str_to_title(iris$Species))
+  iris %>%
+  pluck("Species")%>%
+  stringr::str_to_title()%>%
+  unique()
+  
+  #max(round(iris$Sepal.Length),0)
+  iris %>% 
+    pluck("$epal.Length") %>% 
+    round() %>%
+    max()
+  #mean(abs(rnorm(100,0,5)))
+  seq(100,0,r) %>% 
+    rnorm() %>%
+    mean()
+
+
+  ##ggplot2::calling without loading package  (two colons are called the namespace)####
+  ##plotting again####
+  library(ggplot2)
+  names(penguins)#tells you the comulmn names
+  ggplot(penguins,mapping=aes(x=flipper_length_mm,
+                              y=body_mass_g, color=species,alpha=bill_depth_mm)) +
+#geom_line(aes(group=species))
+  #geom_col() bar chart in ggplot
+
+geom_path(aes(group=species))+stat_ellipse() + geom_point(aes(color=sex))+ geom_polygon()+geom_hex()+ geom_bin_2d()+geom_boxplot() + geom_hline(yintercept=4500,linewidth=5,color='magenta',linetype='1121',alpha=.25)+geom_point(color='yellow',aes(alpha=bill_depth_mm))+ theme(axis.title = element_text(face = 'italic',size=12,angle=30),legend.background=element_rect(fill="hotpink",color="blue",linewidth=5))
   
   
- 
+  
+  
+  #1 on 1 off two on one of
+  #one layer covers the next
+  #alpha controls transparency
+  
+  #aes() is for mapping a whole column toa desired esign type, whereas outside of aesthetic it is simply talking about the data given####
+
 
  
