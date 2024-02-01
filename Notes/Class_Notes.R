@@ -395,6 +395,73 @@ geom_path(aes(group=species))+stat_ellipse() + geom_point(aes(color=sex))+ geom_
   #alpha controls transparency
   
   #aes() is for mapping a whole column toa desired esign type, whereas outside of aesthetic it is simply talking about the data given####
+  
+  ##Leaflet package: good to know####
+  library(leaflet)
+  m <- leaflet() %>%
+    addTiles() %>%  # Add default OpenStreetMap map tiles
+    addMarkers(lat=40.38331524371686, lng=-111.83779529469302, popup="Rosie's parents house")
+  
 
+#2/1/2024####
+  library(tidyverse)
+  library(palmerpenguins)
+# make an interesting plot of the penguin data
+  penguins%>%
+    ggplot(mapping=aes(x=bill_length_mm,y=bill_depth_mm,
+                       color=species,group_by(species)))+
+             geom_point()+
+  stat_ellipse()
+  
+
+  #class notes#
+  penguins %>% ggplot(aes(x=species,
+                          y=body_mass_g))+
+    geom_boxplot()+
+    geom_jitter(height=0,width=.1,alpha=.2) #geom_jitter: adds a small amount of random variation to the location of each point####
+
+  ###Desnsity plot in ggplot####
+  penguins%>%
+    ggplot(aes(x=body_mass_g,fill=species))+
+    geom_density(alpha=.25
+                 )
+  ###histogram in ggplot####
+  penguins%>%
+    ggplot(aes(x=body_mass_g,fill=species))+
+    geom_histogram(alpha=.25)
+#PLOTTING rules: 1. don't hide your data, 2. have a goal, 3. plot before running stats####  
+
+##reding not csv files####
+df <- read_delim("./Data/DatasaurusDozen.tsv")
+
+  df%>%
+    group_by(dataset)%>%
+    summarise(meanx=mean(x),
+              sdx=sd(x),
+              minx=min(x),
+              medianx=median(x))
+df%>%
+  ggplot(aes(x=x,y=y))+
+  geom_point()+
+  facet_wrap(~dataset)
+
+
+###ggpairs()####
+library(GGally)
+ggpairs(penguins)
+
+#bill depth and body mass
+penguins%>%
+  filter(!is.na(sex))%>%
+  ggplot(aes(x=bill_depth_mm,y=body_mass_g,color=species))+
+  geom_point()+
+  facet_wrap(~island,scales="free")+
+  labs(x="Bill Depth (mm)",y="Body mass(g)") 
+
+###within facet you can let each x axis have it's one number scales, you would you scales insieof facetwraps####
+  
+  
+  
+  
 
  
