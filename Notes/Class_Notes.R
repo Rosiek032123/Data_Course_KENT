@@ -456,12 +456,68 @@ penguins%>%
   ggplot(aes(x=bill_depth_mm,y=body_mass_g,color=species))+
   geom_point()+
   facet_wrap(~island,scales="free")+
+  geom_smooth()+
   labs(x="Bill Depth (mm)",y="Body mass(g)") 
 
 ###within facet you can let each x axis have it's one number scales, you would you scales insieof facetwraps####
-  
-  
-  
-  
+
+
+#2/6/24####
+#xkcd pacakge makes stickfigure plots
+
+library(tidyverse)
+library(ggimage)
+library(gganimate)
+library(patchwork)#lets you stick plots together however you want####
+library(gapminder)
+
+names(gapminder)
+str(gapminder)  
+
+df <- gapminder
+
+p<-df%>%
+  ggplot(mapping=aes(x=lifeExp,y=pop,color=continent,))+
+  geom_point()
+  #facet_wrap(~continent,scales="free")#plots are saved as lists
+
+p2 <- p+facet_wrap(~continent)
+
+df$year%>% range
+
+
+mycountries <- c("Venezuela","Rwanda","Nepal","Iraq","Afghanistan","United States")
+
+df <- 
+df %>%
+  mutate(mycountries=case_when(country %in% mycountries ~country))#create new column with only stuff you care about####
+
+
+
+
+p3 <- 
+  ggplot(df,
+         aes(x=gdpPercap,y=lifeExp,color=continent))+
+  geom_point(aes(size=pop))+
+  geom_text(aes(label=mycountries))
+
+
+p3+
+  transition_time(time=year)+
+  labs(title='Year: {frame_time}')##animated plot showing change over time with the year####
+ggsave("./Notes/plot_example.png",width=3,height = 3,dpi=200)###saves an image no animation, dpi is the resolution, 300 ins the min for printing####
+
+anim_save("./Notes/gapminder_animation.gif")#exporting animation
+
+p/p2 + plot_annotation(title="Comparing with and without facets")
+
+p.dark<- p+theme_dark()
+
+p+p.dark
+
+p / p.dark
+
+(p+p.dark)/p.dark+plot_annotation("Main Title")
+patchwork::plot_layout(guides='collect')
 
  
