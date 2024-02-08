@@ -520,4 +520,74 @@ p / p.dark
 (p+p.dark)/p.dark+plot_annotation("Main Title")
 patchwork::plot_layout(guides='collect')
 
- 
+
+#2/8/2024####
+
+library(tidyverse)
+#load this data set
+df <- read.csv("./Data/wide_income_rent.csv")
+#plot rent prices for each state..
+#state on x-axis, rent on y-axis, bar chart
+
+df2= as.data.frame(t(df))
+df2 <- df2[-1,]
+df2$State <- row.names(df2)
+names(df2) <- c("rent","income","State")
+
+##pivot functions for untidy datasets####
+###pviot longer if one ariable is accross multiple columns####
+###pivot wider if multiple variables are in a single column####
+library(tidyverse)
+df %>%
+  pivot_longer(-variable,names_to = "state",values_to = "amount") %>%
+  pivot_wider(names_from = variable,values_from = amount)%>%
+  ggplot(aes(x=state,y=rent,))+
+  geom_col()+
+  theme(axis.text.x=element_text(angle=90, hjust=1,vjust=.5,size=6))
+
+
+
+table1
+####rows should be 1 observation####
+#get table 2 to look likw table1
+table2 %>%
+  pivot_wider(names_from = type,values_from=count)
+
+table3%>%
+  separate(rate, into=c("cases", "population"))##Seperate function####
+
+
+##Join functions####
+x <- table4a%>%
+  pivot_longer(-country, names_to = "year", values_to="cases")
+
+y <- table4b%>%
+  pivot_longer(-country, names_to = "year", values_to="population")
+
+
+full_join(x,y)
+
+##seperate, mutuate, paste example####
+table5 %>%
+  separate(rate, into=c("cases","population"),convert=TRUE) %>%
+  mutate(year=paste0(century,year)%>% as.numeric())%>%
+  select(-century)
+  #paste0 is for wanting no spaces between
+
+
+library(readxl)
+dat <- read_xlsx("./Data/messy_bp.xlsx",skip=3)
+library(tidyverse)
+bp <- 
+  dat %>%
+  select(-starts_with("HR"))
+
+bp%>%
+  pivot_longer(starts_with("BP"), names_to = "visit", values_to = "bp")%>%
+  mutate(visit=case_when(visit == "BP...8"~1,
+                         visit == "BP...10"~2, 
+                         visit == "BP...12"~3))
+
+
+
+#do the same thing with heart rate
