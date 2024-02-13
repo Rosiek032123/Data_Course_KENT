@@ -582,12 +582,72 @@ bp <-
   dat %>%
   select(-starts_with("HR"))
 
-bp%>%
+bp<- bp%>%
   pivot_longer(starts_with("BP"), names_to = "visit", values_to = "bp")%>%
   mutate(visit=case_when(visit == "BP...8"~1,
                          visit == "BP...10"~2, 
-                         visit == "BP...12"~3))
+                         visit == "BP...12"~3)) %>%
+  separate(bp, into=c("systolic","diastolic"))
 
 
 
-#do the same thing with heart rate
+hr <- 
+  dat %>%
+  select(-starts_with("BP"))
+
+hr<- hr%>%
+  pivot_longer(starts_with("HR"), names_to = "visit", values_to = "hr")%>%
+  mutate(visit=case_when(visit == "HR...9"~1,
+                         visit == "HR...11"~2, 
+                         visit == "HR...13"~3)) 
+
+
+df <- full_join(bp,hr)
+#02/13/24####
+#cleanup stuff
+library(janitor)
+janitor::clean_names()##janiotr cleans names so they look better ####
+df <- df%>%
+  clean_names()
+
+#make_clean_names("# caucasian")#makes clean names based from symbols
+
+df$race%>% unique
+
+df <- 
+df%>% mutate(race=case_when(race == "Caucasian" | race == "WHITE"~ "White",
+                             TRUE~df$race))%>%
+  mutate(birthdate=paste(year_birth,month_of_birth,day_birth,sep= "-")%>% as.POSIXct()) %>%
+  mutate(systolic=systolic%>%as.numeric(),
+         diastolic=diastolic%>% as.numeric())%>%
+  select(-pat_id,-month_of_birth,-day_birth,-year_birth) %>%
+  mutate(hispanic=case_when(hispanic=="Hispanic"~TRUE,
+                            TRUE~FALSE))%>%
+  pivot_longer(cols=c("systolic","diastolic"),names_to="bp_type",values_to="bp")
+
+### changing name of elements in a column but if the other elements are fine make the same as the original####
+  
+###as.POSIXct understands leap years, nanoseconds ect####
+
+
+##year is understood as "2023-02-03 year month day"####
+#### %>%unique looks for unique values in column####
+ 
+df%>%
+  ggplot(aes(x=visit,y=hr,color=sex))+
+  geom_path()+
+  facet_wrap(~race)
+ 
+df%>%
+  ggplot(aes(x=visit,y=bp,color=bp_type))+
+  geom_path()+
+ facet_wrap(~race)
+
+ 
+
+ 
+
+  
+
+
+
