@@ -14,9 +14,6 @@ list.files(pattern = ".csv", recursive = TRUE)
 readLines("Data/wide_income.csv")
 #readLines can open a file, head() cannot
 income = read.csv("Data/wide_rent_income.csv" )
-
-
-####Reading in data codes####
 #To read in some csv data
 test.data<-read.csv("")
 
@@ -642,6 +639,51 @@ df%>%
   ggplot(aes(x=visit,y=bp,color=bp_type))+
   geom_path()+
  facet_wrap(~race)
+
+#2/15/24####
+##More Messy Data cleanup####
+library(tidyverse)
+library(skimr)
+library(janitor)
+skim(df) ###skimmr tealls you usful things about a dataframe quickly####
+
+#pivot_longer(cols=c("systolic","diastolic"),names_to="bp_type",values_to="bp")
+#pivot_longer(starts_with("HR"), names_to = "visit", values_to = "hr")
+df <- read_csv("./Data/Bird_Measurements.csv")
+keepers<- c("Family", "Species_number","Species_name","English_name","Clutch_size","Egg_mass", "Mating_System")%>% str_to_lower()
+
+male <- 
+  df%>%
+  clean_names()%>%
+select(keepers,starts_with("m_"), -ends_with("_n"))%>%
+  mutate(sex="male") %>% view() 
+names(male) <- names(male)%>% str_remove("m_")
+
+female <- 
+  df%>%
+  clean_names()%>%
+  select(keepers,starts_with("f_"), -ends_with("_n"))%>%
+  mutate(sex="female") %>% view()
+names(female) <- names(female)%>% str_remove("f_")
+
+unsexed <- 
+  df%>%
+  clean_names()%>%
+  select(keepers,starts_with("unsexed_"), -ends_with("_n"))%>%
+  mutate(sex="unsexed") %>% view()
+names(unsexed) <- names(unsexed)%>% str_remove("unsexed_")
+
+clean <- male.female <- male %>% 
+  full_join(female) %>% 
+  full_join(unsexed)
+
+
+
+#sorst data storage ever
+library(readxl)
+
+x <- read_xlsx("/Users/rosie/Downloads/Worst Data Storage Ever.xlsx",shee=1, range="A1:K10")
+#play with this dataset  
 
  
 
