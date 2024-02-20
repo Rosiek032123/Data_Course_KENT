@@ -685,9 +685,52 @@ library(readxl)
 x <- read_xlsx("/Users/rosie/Downloads/Worst Data Storage Ever.xlsx",shee=1, range="A1:K10")
 #play with this dataset  
 
- 
 
+
+
+
+#2/20/24####
+library(readxl)
+dat <- read_xlsx("./Data/messy_bp.xlsx",skip=3)
+library(tidyverse)
+bp <- 
+  dat %>%
+  select(-starts_with("HR"))
+names(bp)
  
+n.visits <- bp %>% 
+  select(starts_with("BP")) %>% 
+  length()
+1:n.visits ##count's the numbe of visits no matter how many cols####
+
+which(grepl("^BP",names(bp)))##grepl looks for a pattern and returns a true false####
+
+names(bp)[which(grepl("^BP",names(bp)))] <- paste0("visit",1:n.visits)###toegher that is saying which of the names of bp start with bp
+
+bp<- 
+  bp%>%
+  pivot_longer(starts_with("visit"), 
+               names_to = "visit", 
+               values_to = "bp",
+               names_prefix = "visit",
+               names_transform = as.numeric) %>% 
+  separate(bp, into=c(systolic, diastolic))
+  
+  n.visits <- hr %>% 
+  select(starts_with("HR")) %>% 
+  length()
+1:n.visits ##count's the numbe of visits no matter how many cols####
+
+which(grepl("^HR",names(hr)))##grepl looks for a pattern and returns a true false####
+
+names(hr)[which(grepl("^HR",names(hr)))] <- paste0("visit",1:n.visits)###toegher that is saying which of the names of bp start with bp
+hr<- 
+  hr%>%
+  pivot_longer(starts_with("visit"), 
+               names_to = "visit", 
+               values_to = "hr"
+               names_prefix = "visit",
+               names_transform = as.numeric)
 
   
 
