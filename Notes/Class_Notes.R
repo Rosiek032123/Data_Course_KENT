@@ -711,7 +711,7 @@ bp<-
   bp%>%
   pivot_longer(starts_with("visit"), 
                names_to = "visit", 
-               values_to = "bp",
+               values_to = "hr",
                names_prefix = "visit",
                names_transform = as.numeric) %>% 
   separate(bp, into=c(systolic, diastolic))
@@ -731,6 +731,121 @@ hr<-
                values_to = "hr"
                names_prefix = "visit",
                names_transform = as.numeric)
+
+
+#a great package to interact with databases is dbplyer####
+
+##hext sticke r package makes hex stickers####
+
+###mesaurements package####
+library(tidyverse)
+library(measurements)
+x <- c(12,31,44)
+measurements::conv_unit(x,from='inch',to='feet')
+measurements::conv_unit(x,from='inch', to='parsec')
+
+#02/22/2024####
+
+#live datafixing##
+library(readxl)
+#file.copy("~/Desktop/data don't delete/CW_CameraData_2019.xlsx","./Desktop/data don't delete/CW_CameraData_2019.xlsx)
+path <- "/Users/rosie/Desktop/data don't delete/CW_CameraData_2019.xlsx"
+sites <- c("South Oak Spring Site 2",
+           "North Oak Spring Site 1",
+           "Oak Spring", 
+           "North Tickville Site 1",
+           "South Tickville Site 3",
+           "Tickville",
+           "Redwood Road Underpass",
+           "Water Fork Rose Canyon Spring")
+
+sites[1] %>% str_replace_all(" ","_")
+
+
+
+South_Oak_Spring_Site_2<- 
+  read_trap_data(path=path,
+               sheet=sites[1],
+               range1="B17:I17",
+               range2 = "A2:I12")
+
+
+
+ North_Oak_Spring_Site_1 <- 
+   read_trap_data(path=path,
+                   sheet=sites[2],
+                   range1="B15:I15",
+                   range2 = "A2:I12")
+ 
+ Oak_Spring <-    read_trap_data(path=path,
+                                 sheet=sites[3],
+                                 range1="B18:I18",
+                                 range2 = "A2:I15")
+
+ 
+ North_Tickville_Site_1 <- read_trap_data(path=path,
+                                          sheet=sites[4],
+                                          range1="B14:I14",
+                                          range2 = "A2:I11")
+ South_Tickville_Site_3 <-  read_trap_data(path=path,
+                                           sheet=sites[5],
+                                           range1="B13:I13",
+                                           range2 = "A2:I10")
+ Tickville <-  read_trap_data(path=path,
+                              sheet=sites[6],
+                              range1="B14:I14",
+                              range2 = "A2:I11")
+ Redwood_Road_Underpass <- read_trap_data(path=path,
+                                          sheet=sites[7],
+                                          range1="B15:F15",
+                                          range2 = "A2:F12")
+ Water_Fork_Rose_Canyon_Spring <- read_trap_data(path=path,
+                                                 sheet=sites[8],
+                                                 range1="B21:J21",
+                                                 range2 = "A2:J16")
+ 
+ sites %>% str_replace_all(" ","_")
+ South_Oak_Spring_Site_2 %>% 
+   full_join(South_Tickville_Site_3) %>% 
+   full_join(North_Oak_Spring_Site_2) %>% 
+   full_join(North_Tickville_Site_1)
+ 
+
+
+read_trap_data <- 
+function(path,sheet,range1,range2){
+trap_days <- 
+  read_xlsx(path,sheet=sheet,range=range1, col_names=FALSE)
+
+library(janitor)
+x <- 
+  read_xlsx(path,sheet=sheet, range=range2) %>% 
+  clean_names() %>% 
+  mutate(across(-species,as.numeric())) %>% 
+  pivot_longer(-species, names_to="month",values_to="obs_count") %>% 
+  mutate(site=sheet,
+         month=str_to_sentence(month),
+         species=str_to_sentence(species)) %>% 
+  mutate(month=case_when(str_detect(month,"[J,j]an")~"January",
+                                   str_detect(month,"[F,f]eb")~"February",
+                                   str_detect(month, "[M,a]ar")~"March",
+                                   str_detect(month, "[A,a]pr")~"April",
+                                   str_detect(month,"[M,m]ay")~"May",
+                                   str_detect(month,"[J,j]un")~"June",
+                                   str_detect(month,"[J,j]ul")~"Jul",
+                                   str_detect(month,"[A,a]ug")~"August",                                               str_detect(month,"[S,s]ep")~"September",                                            str_detect(month, "[O,o]ct")~"October",                                             str_detect(month, "[N,n]ov")~"November",                                            str_detect(month, "[D,d]ec")~"December"))
+
+x <- 
+x %>% 
+full_join(
+  data.frame(month=x$month %>% unique,
+  trap_days=trap_days[1,] %>% as.numeric())
+)
+return(x)
+}
+  
+
+
 
   
 
