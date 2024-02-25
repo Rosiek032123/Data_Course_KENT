@@ -2,6 +2,7 @@ library(tidyverse)
 library(janitor)
 library(readxl)
 library(gganimate)
+library(ggplot2)
 
 dat<-read_csv("../../Data/BioLog_Plate_Data.csv")
 #1.Cleans this data into tidy (long) form
