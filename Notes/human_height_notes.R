@@ -4,7 +4,7 @@ library(readxl)
 library(measurements)
 
 # DATA ####
-path <- "~/Documents/human_heights.xlsx"
+path <- "./Notes/human_heights.xlsx"
 dat <- read_xlsx(path)
 
 # CLEAN ####
@@ -19,4 +19,4 @@ dat %>%
 
 dat %>% 
   ggplot(aes(x=cm,fill=sex)) +
-  geom_density(alpha=.5)
+  geom_density(alpha=.5)#distirbution density plot

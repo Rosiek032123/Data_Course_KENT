@@ -846,7 +846,47 @@ return(x)
   
 
 #02/27/24####
+# SETUP ####
+library(tidyverse)
+library(readxl)
+library(measurements)
 
+# DATA ####
+path <- "./Notes/human_heights.xlsx"
+dat <- read_xlsx(path)
+
+# CLEAN ####
+dat <- 
+  dat %>% 
+  pivot_longer(everything(),
+               names_to = "sex",
+               values_to = "height") %>% 
+  separate(height, into = c("feet","inches"),convert = TRUE) %>% 
+  mutate(inches = (feet*12) + inches) %>% 
+  mutate(cm=conv_unit(inches, from='in',to='cm'))
+
+dat %>% 
+  ggplot(aes(x=cm,fill=sex)) +
+  geom_density(alpha=.5)#distirbution density plot
+
+t.test(dat$cm~factor(dat$sex))##t-test using formula####
+ #formula with t-testlhs: left has side, rhs: is right hand side
+
+mod <- glm(data=dat,formula=cm~sex)#generalized linear model
+summary(mod)
+
+
+library(easystats) ##Easystats LIFE SAVING PACKAGE####
+report(mod)
+performance(mod)#gives RMSE and R^2, AIC, AICc, BIC, and Sigma, RSME is a statistical distance
+performance::check_model(mod)###Does model checks using check_model####
+
+library(tidyverse)
+mpg %>% ggplot(aes(x=displ,y=cty))+
+  geom_point()+
+  geom_smooth(method='glm')#pipe to do glm modeling type
+glm(data=mpg,
+    formula=cty~displ) %>% summary()
 
 
 
