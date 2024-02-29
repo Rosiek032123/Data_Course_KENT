@@ -22,7 +22,18 @@ sample_id=="Soil_1"|sample_id=="Soil_2"~"Soil"))
 
 
 #3.Generates a plot that matches this one (note just plotting dilution == 0.1):
+dat_clean %>% 
+  filter(dilution == 0.1) %>% 
+  ggplot(aes(x = time, y = absorbance, color = sample_type)) +
+  geom_smooth(se = FALSE, size = 0.5) +
+  facet_wrap(~substrate) +
+  theme_minimal() +
+  theme(text = element_text(size = 8)) +
+  labs(color = "Type") +
+  ggtitle("Just Dilution 0.1")
 
+
+#4.
 plot <- dat_clean %>%
   filter(substrate == 'Itaconic Acid') %>%
   group_by(time, sample_id, dilution) %>%
