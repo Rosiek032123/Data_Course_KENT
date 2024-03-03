@@ -77,7 +77,6 @@ summary(mod2)
 
 
 
-
 # - mod3 should account for Year, Continent, and their interaction term
 mod3 <- 
   glm(data=dat_clean,formula=rate~year*continent)
