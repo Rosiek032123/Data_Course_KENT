@@ -988,3 +988,72 @@ mpg %>%
 
 
 check_model(mod3)#tells if you model is meeting these assumptions####
+
+
+
+##03/05/24####
+library(tidyverse)
+library(easystats)
+library(palmerpenguins)
+#does body_mass_g vary significantly between penguin species?
+mod <- glm(penguins$body_mass_g~penguins$species)#adelie is the intercept because it's alphabecical, if you want something else to be your intercept set it as a factor and set your levels
+summary(mod)
+
+
+##preditc whether a species is "Gentoo" based on size measurements
+names(penguins)
+
+##Logistic Regression, binaray outcome, family=binomial, type=response####
+mod2 <- penguins %>% 
+  mutate(gentoo=case_when(species=="Gentoo"~TRUE,
+                         TRUE~FALSE)) %>% 
+  glm(data=.,
+      formula=gentoo~bill_depth_mm+body_mass_g+flipper_length_mm+bill_length_mm,family='binomial')###dot represents the thing I piped#### 
+
+####family argument gives distirbution, default is gaussian for logistic it needs to be binomial###
+
+summary(mod2)
+check_model(mod2)
+predict(mod2)###logodds
+penguins$pred <- predict(mod2,penguins,type='response')###logistic regression use type='response', gives percentages####
+
+
+penguins %>% 
+ggplot(aes(x=body_mass_g,y=pred,color=species))+
+  geom_point()
+
+preds <- 
+  penguins %>% 
+  mutate(outcome=case_when(pred<0.01~ "Not gentoo",
+                           pred>.75~"Gentoo")) %>% 
+  select(species,outcome) %>% 
+  mutate(correct=case_when(species == "Gentoo" & outcome=="Gentoo"~ TRUE,
+                           species != "Gentoo" & outcome== "Not gentoo"~TRUE,
+                           TRUE~FALSE))
+preds %>% 
+  pluck("correct") %>%
+  sum()/nrow(preds)
+
+
+dat <- read_csv("./Data/GradSchool_Admissions.csv")
+str(dat)
+mod3 <- glm(data=dat,
+            formula=as.logical(admit)~(gre+gpa)*rank,
+            family='binomial')
+dat$pred <- predict(mod3,dat,type='response')
+
+dat %>% 
+  ggplot(aes(x=gpa,y=pred,color=factor(rank)))+
+  geom_point(alpha=.25)+
+  geom_smooth()
+
+dat %>% 
+  ggplot(aes(x=factor(rank),y=pred,color=factor(rank)))+
+  geom_jitter(alpha=.25)+
+  geom_boxplot()+
+  geom_smooth()
+
+
+library(keras)#machine learning on pictures
+#tidymodels package gooed for machine learning
+
