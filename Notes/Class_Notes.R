@@ -1057,3 +1057,12 @@ dat %>%
 library(keras)#machine learning on pictures
 #tidymodels package gooed for machine learning
 
+
+
+#03/26/2024####
+#my webpage is in Rosiek032123.github.io repository
+#use hugo theams to get a better website type
+#in everywebsite default page is index page
+# go into your repostity folder in terminal then do git add . this adds everything
+
+
