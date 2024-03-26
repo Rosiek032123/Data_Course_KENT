@@ -1,0 +1,107 @@
+---
+title: "Assignment_9_script"
+author: "Rosemarie Kent"
+date: "2024-03-26"
+output: html_document
+---
+
+------------------------------------------------------------------------
+
+I am renaming the data set to grad
+
+```{r,results='hide'}
+grad <- read.csv('./GradSchool_Admissions.csv')
+
+```
+
+I will now create multiple logistic regression models based on the variables, GRE score, GPA, and School Rank.
+
+```{r,message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(performance)
+library(easystats)
+grad <- read.csv('./GradSchool_Admissions.csv')
+model1 <- grad %>% 
+  glm(formula=as.logical(admit)~gre*gpa+rank, family='binomial')
+
+model1_rmse <- performance(model1)$RMSE
+
+
+model2 <- grad %>% 
+  glm(formula=as.logical(admit)~gre*gpa*rank, family='binomial')
+
+model2_rmse <- performance(model2)$RMSE
+
+model3 <- grad %>% 
+  glm(formula=as.logical(admit)~gre+gpa*rank, family='binomial')
+
+model3_rmse <- performance(model3)$RMSE
+
+model4 <- grad %>% 
+  glm(formula=as.logical(admit)~gre*rank+gpa, family='binomial')
+
+model4_rmse <- performance(model4)$RMSE
+
+model5 <- grad %>% 
+  glm(formula=as.logical(admit)~gre+rank+gpa, family='binomial')
+
+model5_rmse <- performance(model5)$RMSE
+
+model6 <- grad %>% 
+  glm(formula=as.logical(admit)~(gre+gpa)*rank, family='binomial')
+
+model6_rmse <- performance(model5)$RMSE
+
+
+
+```
+
+For each of the models I will also calculate the RSME
+
+```{r}
+rmse_table <- data.frame(
+  Model = c("Model 1", "Model 2", "Model 3", "Model 4","Model 5","Model 6"),
+  RMSE = c(model1_rmse, model2_rmse, model3_rmse, model4_rmse,model5_rmse,model6_rmse)
+)
+
+print(rmse_table)
+```
+
+```{r, message=FALSE}
+library(GGally)
+grad %>% ggpairs()
+```
+
+I have created a plot that will compare all the models to find which one is the best fit. I also am looking at a table to compare the different model's.
+
+```{r}
+compare_performance(model1,model2,model3,model4,model5,model6)
+compare_performance(model1,model2,model3,model4,model5,model6) %>% plot()
+
+```
+
+Looking at the table, model 1 and model 2 have the lowest RSME's but model one does have the lowest AICC.Based on the plot I am going to use Model 1, as it is the best fit for many of the variables of interest such as AICC, AIC, and almost RSME.
+
+Using model I I will predict values for admittance a nd non admittance.
+
+```{r,results='hide'}
+grad$pred <- predict(model1,grad,type='response')
+
+```
+
+Using the prediction from model One I am going to plot boxplots and line plots that will show the probability of getting admitted into graduate school based on gpa and I will color it by school rank.
+
+```{r,results='hide',message=FALSE}
+grad %>% 
+  ggplot(aes(x=gpa,y=pred,color=factor(rank)))+
+  geom_point(alpha=.25)+
+  geom_smooth()
+grad %>% 
+  ggplot(aes(x=factor(rank),y=pred,color=factor(rank)))+
+  geom_jitter(alpha=.25)+
+  geom_boxplot()+
+  geom_smooth()
+```
+
+Based on the graphs and our plots it it looks like Rank plays a large impact of graduate school acceptance. If you are at a rank one school your probability of getting in is much larger then someone attending a rank 4 school.
